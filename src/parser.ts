@@ -50,13 +50,13 @@ export function jsonToSqlView(json: any) {
     let parentSql = `SELECT`;
     for (const [i, k] of keys.entries()) {
         if (typeof json[k] === 'object' && isGeoJsonFeatureCollection(json[k])) {
-           parentSql = `${parentSql}\n${commaIfNeeded(i)}TO_JSON_STRING(json_blob.${k}) as ${snakeCase(k)}`
+           parentSql = `${parentSql}\n\t${commaIfNeeded(i)}TO_JSON_STRING(json_blob.${k}) as ${snakeCase(k)}`
         } else if (typeof json[k] === 'object' && !isGeoJsonFeatureCollection(json[k])){
             const query = parseNestedKey(json[k], k)
             childQueries.push(query)
         } else {
            const type = datatype(json[k])
-           parentSql = `${parentSql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type}) as ${snakeCase(k)}`
+           parentSql = `${parentSql}\n\t${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type}) as ${snakeCase(k)}`
         } 
     }
     parentSql = `${parentSql}\nFROM <project>.<datastream>.<dataset>`
@@ -72,9 +72,9 @@ export function parseNestedKey(json: any, keyName: string) {
         const col = columns[i]
         const type = datatype(values[i])
         if (type === "NESTED_OBJECT") {
-            sql = `${sql}\n${commaIfNeeded(i)}TO_JSON_STRING(json_blob.${keyName}.${col}) as ${snakeCase(col)}`
+            sql = `${sql}\n\t${commaIfNeeded(i)}TO_JSON_STRING(json_blob.${keyName}.${col}) as ${snakeCase(col)}`
         } else {
-            sql = `${sql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type}) as ${snakeCase(col)}` 
+            sql = `${sql}\n\t${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type}) as ${snakeCase(col)}` 
         }
     }
     sql = `${sql}\nFROM <project>.<datastream>.<dataset>`
