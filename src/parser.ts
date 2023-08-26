@@ -17,19 +17,20 @@ export function commaIfNeeded(index: number) {
 export function jsonToSqlView(rawJson: string) {
     const json = JSON.parse(rawJson)
     const keys = Object.keys(json)
-    let childSql = "";
+    const childQueries = [];
 
     let parentSql = `SELECT`;
     for (const [i, k] of keys.entries()) {
         if (typeof json[k] === 'object'){
-            childSql = childSql + parseNestedKey(json[k], k)
+            const query = parseNestedKey(json[k], k)
+            childQueries.push(query)
         } else {
            const type = datatype(json[k])
            parentSql = `${parentSql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type})`
         } 
     }
     parentSql = `${parentSql}\nFROM <project>.<datastream>.<dataset>`
-    return { parentSql, childSql }
+    return { parentSql, childQueries }
 }
 
 export function parseNestedKey(json: any, keyName: string) {
