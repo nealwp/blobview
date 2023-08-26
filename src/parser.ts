@@ -10,6 +10,19 @@ export function datatype(input: any) {
     }
 }
 
+export function isGeoJsonFeatureCollection(obj: any) {
+     if (
+        typeof obj === 'object' &&
+        obj !== null &&
+        obj.type === 'FeatureCollection' &&
+        Array.isArray(obj.features)
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
 export function commaIfNeeded(index: number) {
     if (index == 0) return ''; else return ', ';
 }
@@ -33,7 +46,9 @@ export function jsonToSqlView(rawJson: string) {
 
     let parentSql = `SELECT`;
     for (const [i, k] of keys.entries()) {
-        if (typeof json[k] === 'object'){
+        if (typeof json[k] === 'object' && isGeoJsonFeatureCollection(json[k])) {
+           parentSql = `${parentSql}\n${commaIfNeeded(i)}TO_JSON_STRING(json_blob.${k}) as ${snakeCase(k)}`
+        } else if (typeof json[k] === 'object' && !isGeoJsonFeatureCollection(json[k])){
             const query = parseNestedKey(json[k], k)
             childQueries.push(query)
         } else {

@@ -1,4 +1,4 @@
-import { snakeCase, commaIfNeeded, jsonToSqlView, parseNestedKey, datatype } from './parser'
+import { isGeoJsonFeatureCollection, snakeCase, commaIfNeeded, jsonToSqlView, parseNestedKey, datatype } from './parser'
 
 describe('parser', () => {
     describe('jsonToSqlView', () => {
@@ -44,6 +44,23 @@ describe('parser', () => {
             }
             const json = JSON.stringify(testObj)
             const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.key1) as INTEGER) as key_1\n, CAST(JSON_VALUE(json_blob.key2) as STRING) as key_2\n, CAST(JSON_VALUE(json_blob.key3) as DECIMAL) as key_3\nFROM <project>.<datastream>.<dataset>'
+            const output = jsonToSqlView(json)
+            expect(output.parentSql).toEqual(expectedResult)
+        })
+
+        it('should keep geoJson collections in parent query as json strings', () => {
+            const testObj = {
+                geoJsonThing1: {
+                    type: "FeatureCollection",
+                    features: ["feature", "collection", "here"]
+                },
+                geoJsonThing2: {
+                    type: "FeatureCollection",
+                    features: ["feature", "collection", "here"]
+                }
+            }
+            const json = JSON.stringify(testObj)
+            const expectedResult = 'SELECT\nTO_JSON_STRING(json_blob.geoJsonThing1) as geo_json_thing_1\n, TO_JSON_STRING(json_blob.geoJsonThing2) as geo_json_thing_2\nFROM <project>.<datastream>.<dataset>'
             const output = jsonToSqlView(json)
             expect(output.parentSql).toEqual(expectedResult)
         })
@@ -128,6 +145,20 @@ describe('parser', () => {
             const expected = 'my_key_123'
             const result = snakeCase(text)
             expect(result).toEqual(expected)
+        })
+    })
+
+    describe('isGeoJsonFeatureCollection', () => {
+        it('should return false if not a feature collection', () => {
+            expect(isGeoJsonFeatureCollection({foo: 'bar'})).toBe(false)
+        })
+        
+        it('should return true if a feature collection', () => {
+            const geoJson = {
+                type: "FeatureCollection",
+                features: ["array of features"]
+            }
+            expect(isGeoJsonFeatureCollection(geoJson)).toBe(true)
         })
     })
 })
