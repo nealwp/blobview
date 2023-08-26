@@ -10,6 +10,10 @@ export function datatype(input: any) {
     }
 }
 
+export function commaIfNeeded(index: number) {
+    if (index == 0) return ''; else return ', ';
+}
+
 export function jsonToSqlView(rawJson: string) {
     const json = JSON.parse(rawJson)
     const keys = Object.keys(json)
