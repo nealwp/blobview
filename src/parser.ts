@@ -8,6 +8,11 @@ export function datatype(input: any) {
     if(typeof input === 'number' && !Number.isInteger(input)) {
         return "DECIMAL"
     }
+    if(typeof input === 'object') {
+        return "NESTED_OBJECT"
+    }
+    // deeply nested objects should get TO_JSON_STRING'd
+    // what to do with arrays?
 }
 
 export function isGeoJsonFeatureCollection(obj: any) {
@@ -68,7 +73,11 @@ export function parseNestedKey(json: any, keyName: string) {
     for(let i=0; i<columns.length; i++){
         const col = columns[i]
         const type = datatype(values[i])
-        sql = `${sql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type}) as ${snakeCase(col)}` 
+        if (type === "NESTED_OBJECT") {
+            sql = `${sql}\n${commaIfNeeded(i)}TO_JSON_STRING(json_blob.${keyName}.${col}) as ${snakeCase(col)}`
+        } else {
+            sql = `${sql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type}) as ${snakeCase(col)}` 
+        }
     }
     sql = `${sql}\nFROM <project>.<datastream>.<dataset>`
     return sql

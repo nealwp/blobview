@@ -64,6 +64,15 @@ describe('parser', () => {
             const output = jsonToSqlView(json)
             expect(output.parentSql).toEqual(expectedResult)
         })
+
+        it('should json string deeply nested objects', () => {
+            const testObj = { nestedKey: { deeplyNestedKey: { some: 'key' } } }
+
+            const json = JSON.stringify(testObj)
+            const expectedResult = ['SELECT\nTO_JSON_STRING(json_blob.nestedKey.deeplyNestedKey) as deeply_nested_key\nFROM <project>.<datastream>.<dataset>']
+            const output = jsonToSqlView(json)
+            expect(output.childQueries).toEqual(expectedResult)
+        })
     })
 
     describe('parseNestedKey', () => {
@@ -79,6 +88,14 @@ describe('parser', () => {
             const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER) as nested_key_1\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) as nested_key_2\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>'
             const output = parseNestedKey(testObj.topKey, 'topKey')
             expect(output).toEqual(expectedResult) 
+        })
+        
+        it('should json string deeply nested objects', () => {
+            const testObj = { nestedKey: { deeplyNestedKey: { some: 'key' } } }
+
+            const expectedResult = 'SELECT\nTO_JSON_STRING(json_blob.nestedKey.deeplyNestedKey) as deeply_nested_key\nFROM <project>.<datastream>.<dataset>'
+            const output = parseNestedKey(testObj.nestedKey, 'nestedKey')
+            expect(output).toEqual(expectedResult)
         })
     })
 
@@ -108,6 +125,11 @@ describe('parser', () => {
             const input = 3.14
             const result = datatype(input)
             expect(result).toEqual("DECIMAL")
+        })
+        it('should return NESTED_OBJECT for deeply nested object', () => {
+            const input = {some: 'object'}
+            const result = datatype(input)
+            expect(result).toEqual("NESTED_OBJECT")
         })
     })
 
