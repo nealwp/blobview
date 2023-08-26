@@ -15,8 +15,7 @@ export const main = () => {
     try {
         const fileContent = readJsonFileContent(inputFilePath)
         const sqlOutput = jsonToSqlView(fileContent)
-        writeToStdOut(sqlOutput.parentSql)
-        sqlOutput.childQueries.forEach(q => writeToStdOut(q))
+        writeToStdOut(sqlOutput)
     } catch(err) {
         console.log(err)
     }

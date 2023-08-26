@@ -22,10 +22,10 @@ describe('io', () => {
 
     describe('writeToStdOut', () => {
         it('should write content to stdout', () => {
-            const output = "SELECT\nfoo\n, bar\nFROM baz"
+            const output = { parentSql: "SELECT\nfoo\n, bar\nFROM baz", childQueries: []}
             console.log = jest.fn()
             writeToStdOut(output)
-            expect(console.log).toHaveBeenCalledWith(output)
+            expect(console.log).toHaveBeenCalledWith(output.parentSql)
         })
     })
 })

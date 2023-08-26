@@ -5,6 +5,10 @@ export function readJsonFileContent(path: string) {
     return JSON.parse(fileContent)
 }
 
-export function writeToStdOut(data: string) {
-    console.log(data)
+export function writeToStdOut(data: {parentSql: string, childQueries: string[]}) {
+    console.log(data.parentSql)
+    data.childQueries.forEach(q => { 
+        console.log("--------")
+        console.log(q)
+    })
 }
