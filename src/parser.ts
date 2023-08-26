@@ -11,7 +11,6 @@ export function datatype(input: any) {
     if(typeof input === 'object') {
         return "NESTED_OBJECT"
     }
-    // deeply nested objects should get TO_JSON_STRING'd
     // what to do with arrays?
 }
 
