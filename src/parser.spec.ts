@@ -12,9 +12,8 @@ describe('parser', () => {
                 }
             }
 
-            const json = JSON.stringify(testObj)
             const expectedResult = ['SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER) as nested_key_1\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) as nested_key_2\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>']
-            const output = jsonToSqlView(json)
+            const output = jsonToSqlView(testObj)
             expect(output.childQueries).toEqual(expectedResult) 
         })
 
@@ -26,13 +25,12 @@ describe('parser', () => {
                 topKey3: { nestedKey3: 3.14 }
             }
 
-            const json = JSON.stringify(testObj)
             const expectedResult = [
                 'SELECT\nCAST(JSON_VALUE(json_blob.topKey1.nestedKey1) as STRING) as nested_key_1\nFROM <project>.<datastream>.<dataset>',
                 'SELECT\nCAST(JSON_VALUE(json_blob.topKey2.nestedKey2) as INTEGER) as nested_key_2\nFROM <project>.<datastream>.<dataset>',
                 'SELECT\nCAST(JSON_VALUE(json_blob.topKey3.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>',
             ]
-            const output = jsonToSqlView(json)
+            const output = jsonToSqlView(testObj)
             expect(output.childQueries).toEqual(expectedResult) 
         })
 
@@ -42,9 +40,8 @@ describe('parser', () => {
                 key2: 'abcd',
                 key3: 3.14
             }
-            const json = JSON.stringify(testObj)
             const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.key1) as INTEGER) as key_1\n, CAST(JSON_VALUE(json_blob.key2) as STRING) as key_2\n, CAST(JSON_VALUE(json_blob.key3) as DECIMAL) as key_3\nFROM <project>.<datastream>.<dataset>'
-            const output = jsonToSqlView(json)
+            const output = jsonToSqlView(testObj)
             expect(output.parentSql).toEqual(expectedResult)
         })
 
@@ -59,18 +56,16 @@ describe('parser', () => {
                     features: ["feature", "collection", "here"]
                 }
             }
-            const json = JSON.stringify(testObj)
             const expectedResult = 'SELECT\nTO_JSON_STRING(json_blob.geoJsonThing1) as geo_json_thing_1\n, TO_JSON_STRING(json_blob.geoJsonThing2) as geo_json_thing_2\nFROM <project>.<datastream>.<dataset>'
-            const output = jsonToSqlView(json)
+            const output = jsonToSqlView(testObj)
             expect(output.parentSql).toEqual(expectedResult)
         })
 
         it('should json string deeply nested objects', () => {
             const testObj = { nestedKey: { deeplyNestedKey: { some: 'key' } } }
 
-            const json = JSON.stringify(testObj)
             const expectedResult = ['SELECT\nTO_JSON_STRING(json_blob.nestedKey.deeplyNestedKey) as deeply_nested_key\nFROM <project>.<datastream>.<dataset>']
-            const output = jsonToSqlView(json)
+            const output = jsonToSqlView(testObj)
             expect(output.childQueries).toEqual(expectedResult)
         })
     })

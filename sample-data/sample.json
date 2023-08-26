@@ -1,0 +1,56 @@
+{
+  "id": "64ea4cc2d2a30b1df2401816",
+  "index": 0,
+  "guid": "0ae4cc55-adf6-48c9-865c-839eebeb3515",
+  "accountBalance": "$3,280.97",
+  "picture": "http://placehold.it/32x32",
+  "age": 20,
+  "eyeColor": "blue",
+  "name": "Shaw Fulton",
+  "profileInfo": {
+      "gender": "male",
+      "company": "LIMOZEN",
+      "email": "shawfulton@limozen.com",
+      "phone": "+1 (827) 443-2267",
+      "address": "637 Guernsey Street, Driftwood, Missouri, 5848",
+      "about": "Deserunt aliquip commodo minim qui qui non eiusmod nisi mollit veniam. Ullamco velit elit labore do aliqua et amet. Et ex quis voluptate laborum occaecat mollit. Adipisicing aliquip aliqua exercitation officia ex ex dolore id adipisicing ullamco.\r\n"
+  },
+  "otherDataPoints": {
+      "registered": "2015-02-10T12:39:26 +08:00",
+      "latitude": 32.667598,
+      "longitude": 4.219472,
+      "greeting": "Hello, Shaw Fulton! You have 3 unread messages.",
+      "favoriteFruit": "banana"
+  },
+  "mixedInNestedObjects": {
+      "isNormal": "i sure hope so",
+      "whatItsAllAbout": "hokey-pokey",
+      "funkyPlaceholder": {"favoritePhilosopher": "Kant", "shoeSize": 14.5},
+      "corporateAlliances": {"centristEpicenter": "total", "garbageCollectionCycles": "Seasonal"},
+      "steakhousePortaits": {"fieldGoal": 42, "campsiteWebsite": "dogetoutmore.com"}
+  },
+  "dogParkGeoJson": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": 16,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-32.667598, -4.239272],
+              [-32.767999, -4.319272],
+              [-32.687588, -4.649872],
+              [-32.617548, -4.219892],
+              [-32.622598, -4.159472],
+              [-32.667533, -4.169472],
+              [-32.567598, -4.789222],
+              [-32.617191, -4.919373]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

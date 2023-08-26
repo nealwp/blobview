@@ -43,8 +43,7 @@ export function snakeCase(str: string) {
     });
 }
 
-export function jsonToSqlView(rawJson: string) {
-    const json = JSON.parse(rawJson)
+export function jsonToSqlView(json: any) {
     const keys = Object.keys(json)
     const childQueries = [];
 
