@@ -14,6 +14,18 @@ export function commaIfNeeded(index: number) {
     if (index == 0) return ''; else return ', ';
 }
 
+export function snakeCase(str: string) {
+  return str.replace(/[A-Z\d]+/g, (match, index) => {
+        if (index === 0) {
+            return match.toLowerCase();
+        } else if (/[A-Z\d]/.test(str[index - 1])) {
+            return match.toLowerCase();
+        } else {
+            return `_${match.toLowerCase()}`;
+        }
+    });
+}
+
 export function jsonToSqlView(rawJson: string) {
     const json = JSON.parse(rawJson)
     const keys = Object.keys(json)
@@ -26,7 +38,7 @@ export function jsonToSqlView(rawJson: string) {
             childQueries.push(query)
         } else {
            const type = datatype(json[k])
-           parentSql = `${parentSql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type})`
+           parentSql = `${parentSql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type}) as ${snakeCase(k)}`
         } 
     }
     parentSql = `${parentSql}\nFROM <project>.<datastream>.<dataset>`

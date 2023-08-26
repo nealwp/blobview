@@ -1,4 +1,4 @@
-import { commaIfNeeded, jsonToSqlView, parseNestedKey, datatype } from './parser'
+import { snakeCase, commaIfNeeded, jsonToSqlView, parseNestedKey, datatype } from './parser'
 
 describe('parser', () => {
     describe('jsonToSqlView', () => {
@@ -43,7 +43,7 @@ describe('parser', () => {
                 key3: 3.14
             }
             const json = JSON.stringify(testObj)
-            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.key1) as INTEGER)\n, CAST(JSON_VALUE(json_blob.key2) as STRING)\n, CAST(JSON_VALUE(json_blob.key3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>'
+            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.key1) as INTEGER) as key_1\n, CAST(JSON_VALUE(json_blob.key2) as STRING) as key_2\n, CAST(JSON_VALUE(json_blob.key3) as DECIMAL) as key_3\nFROM <project>.<datastream>.<dataset>'
             const output = jsonToSqlView(json)
             expect(output.parentSql).toEqual(expectedResult)
         })
@@ -91,6 +91,43 @@ describe('parser', () => {
             const input = 3.14
             const result = datatype(input)
             expect(result).toEqual("DECIMAL")
+        })
+    })
+
+    describe('snakeCase', () => {
+         test('should convert a camelCase string to snake_case', () => {
+            const text = 'thisIsCamelCase'
+            const expected = 'this_is_camel_case'
+            const result = snakeCase(text)
+            expect(result).toEqual(expected)
+        })
+
+        test('should treat consecutive uppercase as a single word', () => {
+            const text = 'thisIsCostUSD'
+            const expected = 'this_is_cost_usd'
+            const result = snakeCase(text)
+            expect(result).toEqual(expected)
+        })
+
+        test('should convert PascalCase to snake_case', () => {
+            const text = 'ThisIsPascalCase'
+            const expected = 'this_is_pascal_case'
+            const result = snakeCase(text)
+            expect(result).toEqual(expected)
+        })
+
+        test('should prefix numbers with underscore', () => {
+            const text = 'myKey1'
+            const expected = 'my_key_1'
+            const result = snakeCase(text)
+            expect(result).toEqual(expected)
+        })
+
+        test('should treat consecutive numbers as word', () => {
+            const text = 'myKey123'
+            const expected = 'my_key_123'
+            const result = snakeCase(text)
+            expect(result).toEqual(expected)
         })
     })
 })
