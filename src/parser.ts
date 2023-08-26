@@ -25,7 +25,7 @@ export function jsonToSqlView(rawJson: string) {
             childSql = childSql + parseNestedKey(json[k], k)
         } else {
            const type = datatype(json[k])
-           parentSql = `${parentSql}\n${i == 0 ? '' : ', '}CAST(JSON_VALUE(json_blob.${k}) as ${type})`
+           parentSql = `${parentSql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type})`
         } 
     }
     parentSql = `${parentSql}\nFROM <project>.<datastream>.<dataset>`
@@ -40,7 +40,7 @@ export function parseNestedKey(json: any, keyName: string) {
     for(let i=0; i<columns.length; i++){
         const col = columns[i]
         const type = datatype(values[i])
-        sql = `${sql}\n${i == 0 ? '' : ', '}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type})` 
+        sql = `${sql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type})` 
     }
     sql = `${sql}\nFROM <project>.<datastream>.<dataset>`
     return sql
