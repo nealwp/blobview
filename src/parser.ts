@@ -16,17 +16,17 @@ export function jsonToSqlView(json: string) {
     const columns = Object.keys(parsed[view])    
     const values = Object.values(parsed[view])
 
-    let sql = `SELECT CAST(JSON_VALUE(` 
+    let sql = `SELECT\nCAST(JSON_VALUE(` 
     for(let i=0; i<columns.length; i++){
         const col = columns[i]
         const type = datatype(values[i])
         if (i+1 < columns.length) {
-            sql = `${sql}json_blob.${view}.${col}) as ${type}), CAST(JSON_VALUE(` 
+            sql = `${sql}json_blob.${view}.${col}) as ${type}),\nCAST(JSON_VALUE(` 
         } else {
             sql = `${sql}json_blob.${view}.${col}) as ${type})`
         }
     }
-    sql = `${sql} FROM <project>.<datastream>.<dataset>`
+    sql = `${sql}\nFROM <project>.<datastream>.<dataset>`
     return sql
 }
 

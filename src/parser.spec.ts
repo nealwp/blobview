@@ -6,12 +6,13 @@ describe('parser', () => {
             const testObj = {
                 topKey: {
                     nestedKey1: 1234,
-                    nestedKey2: 'abcd'
+                    nestedKey2: 'abcd',
+                    nestedKey3: 3.14
                 }
             }
 
             const json = JSON.stringify(testObj)
-            const expectedResult = `SELECT CAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER), CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) FROM <project>.<datastream>.<dataset>`
+            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER),\nCAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING),\nCAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>'
             const output = jsonToSqlView(json)
             expect(output).toEqual(expectedResult) 
         })
