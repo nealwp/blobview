@@ -1,7 +1,7 @@
 {
     "name": "@nealwp/blobview",
     "version": "0.1.0",
-    "description": "Generate BigQuery SQL views from JSON blobs",
+    "description": "Generate BigQuery SQL views from JSON",
     "bin": {
         "@nealwp/blobview": "./index.js"
     },
