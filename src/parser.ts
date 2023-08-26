@@ -1,4 +1,4 @@
-function jsonToSqlView(json: string) {
+export function jsonToSqlView(json: string) {
     const parsed = JSON.parse(json)
     const view = Object.keys(parsed)[0]
     const columns = Object.keys(parsed[view])    
@@ -15,6 +15,3 @@ function jsonToSqlView(json: string) {
     return sql
 }
 
-export const parser = {
-    jsonToSqlView
-}

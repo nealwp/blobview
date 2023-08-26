@@ -1,4 +1,4 @@
-import { parser } from './parser'
+import { jsonToSqlView } from './parser'
 
 describe('parser', () => {
     it('should produce sql query from json', () => {
@@ -11,7 +11,7 @@ describe('parser', () => {
 
         const json = JSON.stringify(testObj)
         const expectedResult = `SELECT JSON_VALUE(json_blob.topKey.nestedKey1), JSON_VALUE(json_blob.topKey.nestedKey2) FROM <project>.<datastream>.<dataset>`
-        const output = parser.jsonToSqlView(json)
+        const output = jsonToSqlView(json)
         expect(output).toEqual(expectedResult) 
     })
 })
