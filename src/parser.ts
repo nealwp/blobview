@@ -53,7 +53,7 @@ export function parseNestedKey(json: any, keyName: string) {
     for(let i=0; i<columns.length; i++){
         const col = columns[i]
         const type = datatype(values[i])
-        sql = `${sql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type})` 
+        sql = `${sql}\n${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type}) as ${snakeCase(col)}` 
     }
     sql = `${sql}\nFROM <project>.<datastream>.<dataset>`
     return sql

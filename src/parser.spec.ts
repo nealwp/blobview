@@ -13,7 +13,7 @@ describe('parser', () => {
             }
 
             const json = JSON.stringify(testObj)
-            const expectedResult = ['SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER)\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING)\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>']
+            const expectedResult = ['SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER) as nested_key_1\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) as nested_key_2\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>']
             const output = jsonToSqlView(json)
             expect(output.childQueries).toEqual(expectedResult) 
         })
@@ -28,9 +28,9 @@ describe('parser', () => {
 
             const json = JSON.stringify(testObj)
             const expectedResult = [
-                'SELECT\nCAST(JSON_VALUE(json_blob.topKey1.nestedKey1) as STRING)\nFROM <project>.<datastream>.<dataset>',
-                'SELECT\nCAST(JSON_VALUE(json_blob.topKey2.nestedKey2) as INTEGER)\nFROM <project>.<datastream>.<dataset>',
-                'SELECT\nCAST(JSON_VALUE(json_blob.topKey3.nestedKey3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>',
+                'SELECT\nCAST(JSON_VALUE(json_blob.topKey1.nestedKey1) as STRING) as nested_key_1\nFROM <project>.<datastream>.<dataset>',
+                'SELECT\nCAST(JSON_VALUE(json_blob.topKey2.nestedKey2) as INTEGER) as nested_key_2\nFROM <project>.<datastream>.<dataset>',
+                'SELECT\nCAST(JSON_VALUE(json_blob.topKey3.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>',
             ]
             const output = jsonToSqlView(json)
             expect(output.childQueries).toEqual(expectedResult) 
@@ -59,7 +59,7 @@ describe('parser', () => {
                 }
             }
 
-            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER)\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING)\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>'
+            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER) as nested_key_1\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) as nested_key_2\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>'
             const output = parseNestedKey(testObj.topKey, 'topKey')
             expect(output).toEqual(expectedResult) 
         })
