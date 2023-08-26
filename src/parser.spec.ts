@@ -1,4 +1,4 @@
-import { jsonToSqlView, datatype } from './parser'
+import { jsonToSqlView, parseNestedKey, datatype } from './parser'
 
 describe('parser', () => {
     describe('jsonToSqlView', () => {
@@ -12,8 +12,35 @@ describe('parser', () => {
             }
 
             const json = JSON.stringify(testObj)
-            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER),\nCAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING),\nCAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>'
+            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER)\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING)\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>'
             const output = jsonToSqlView(json)
+            expect(output.childSql).toEqual(expectedResult) 
+        })
+        it('should handle top level keys', () => {
+            const testObj = {
+                key1: 1234,
+                key2: 'abcd',
+                key3: 3.14
+            }
+            const json = JSON.stringify(testObj)
+            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.key1) as INTEGER)\n, CAST(JSON_VALUE(json_blob.key2) as STRING)\n, CAST(JSON_VALUE(json_blob.key3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>'
+            const output = jsonToSqlView(json)
+            expect(output.parentSql).toEqual(expectedResult)
+        })
+    })
+
+    describe('parseNestedKey', () => {
+        it('should produce sql query from json object', () => {
+            const testObj = {
+                topKey: {
+                    nestedKey1: 1234,
+                    nestedKey2: 'abcd',
+                    nestedKey3: 3.14
+                }
+            }
+
+            const expectedResult = 'SELECT\nCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER)\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING)\n, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL)\nFROM <project>.<datastream>.<dataset>'
+            const output = parseNestedKey(testObj.topKey, 'topKey')
             expect(output).toEqual(expectedResult) 
         })
     })

@@ -10,24 +10,34 @@ export function datatype(input: any) {
     }
 }
 
-export function jsonToSqlView(json: string) {
-    const parsed = JSON.parse(json)
-    const view = Object.keys(parsed)[0]
-    const columns = Object.keys(parsed[view])    
-    const values = Object.values(parsed[view])
+export function jsonToSqlView(rawJson: string) {
+    const json = JSON.parse(rawJson)
+    const keys = Object.keys(json)
+    let childSql = "";
 
-    let sql = `SELECT\nCAST(JSON_VALUE(` 
+    let parentSql = `SELECT`;
+    for (const [i, k] of keys.entries()) {
+        if (typeof json[k] === 'object'){
+            childSql = childSql + parseNestedKey(json[k], k)
+        } else {
+           const type = datatype(json[k])
+           parentSql = `${parentSql}\n${i == 0 ? '' : ', '}CAST(JSON_VALUE(json_blob.${k}) as ${type})`
+        } 
+    }
+    parentSql = `${parentSql}\nFROM <project>.<datastream>.<dataset>`
+    return { parentSql, childSql }
+}
+
+export function parseNestedKey(json: any, keyName: string) {
+    const columns = Object.keys(json)    
+    const values = Object.values(json)
+
+    let sql = `SELECT` 
     for(let i=0; i<columns.length; i++){
         const col = columns[i]
         const type = datatype(values[i])
-        const notLastColumn = i+1 < columns.length
-        if (notLastColumn) {
-            sql = `${sql}json_blob.${view}.${col}) as ${type}),\nCAST(JSON_VALUE(` 
-        } else {
-            sql = `${sql}json_blob.${view}.${col}) as ${type})`
-        }
+        sql = `${sql}\n${i == 0 ? '' : ', '}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type})` 
     }
     sql = `${sql}\nFROM <project>.<datastream>.<dataset>`
     return sql
 }
-
