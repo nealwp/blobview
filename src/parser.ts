@@ -5,6 +5,9 @@ export function datatype(input: any) {
     if (typeof input === 'number' && Number.isInteger(input)) {
         return "INTEGER"
     }
+    if(typeof input === 'number' && !Number.isInteger(input)) {
+        return "DECIMAL"
+    }
 }
 
 export function jsonToSqlView(json: string) {

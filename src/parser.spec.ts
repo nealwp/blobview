@@ -28,5 +28,10 @@ describe('parser', () => {
             const result = datatype(input)
             expect(result).toEqual("INTEGER")
         })
+        it('should return DECIMAL for decimal', () => {
+            const input = 3.14
+            const result = datatype(input)
+            expect(result).toEqual("DECIMAL")
+        })
     })
 })
