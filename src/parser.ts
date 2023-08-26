@@ -20,7 +20,8 @@ export function jsonToSqlView(json: string) {
     for(let i=0; i<columns.length; i++){
         const col = columns[i]
         const type = datatype(values[i])
-        if (i+1 < columns.length) {
+        const notLastColumn = i+1 < columns.length
+        if (notLastColumn) {
             sql = `${sql}json_blob.${view}.${col}) as ${type}),\nCAST(JSON_VALUE(` 
         } else {
             sql = `${sql}json_blob.${view}.${col}) as ${type})`
