@@ -73,7 +73,7 @@ function printError(message: string) {
 
 const args = minimist(process.argv.slice(2), {
     stopEarly: true,
-    boolean: true
+    boolean: false
 })
 
 main(args); 
