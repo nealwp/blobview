@@ -43,8 +43,19 @@ export function snakeCase(str: string) {
     });
 }
 
-export function jsonToSqlView(json: any) {
+type Options = {
+    table?: string,
+    dataset?: string
+}
+
+const defaultOptions: Options = {
+    table: '<table>',
+    dataset: '<dataset>'
+}
+
+export function jsonToSqlView(json: any, options: Options = defaultOptions) {
     const keys = Object.keys(json)
+    const { table = '<table>', dataset = '<dataset>' } = options
     const childQueries = [];
 
     let parentSql = `SELECT`;
@@ -52,20 +63,21 @@ export function jsonToSqlView(json: any) {
         if (typeof json[k] === 'object' && isGeoJsonFeatureCollection(json[k])) {
            parentSql = `${parentSql}\n\t${commaIfNeeded(i)}TO_JSON_STRING(json_blob.${k}) as ${snakeCase(k)}`
         } else if (typeof json[k] === 'object' && !isGeoJsonFeatureCollection(json[k])){
-            const query = parseNestedKey(json[k], k)
+            const query = parseNestedKey(json[k], k, options)
             childQueries.push(query)
         } else {
            const type = datatype(json[k])
            parentSql = `${parentSql}\n\t${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type}) as ${snakeCase(k)}`
         } 
     }
-    parentSql = `${parentSql}\nFROM <project>.<datastream>.<dataset>`
+    parentSql = `${parentSql}\nFROM <project>.${dataset}.${table}`
     return { parentSql, childQueries }
 }
 
-export function parseNestedKey(json: any, keyName: string) {
+export function parseNestedKey(json: any, keyName: string, options: Options = defaultOptions) {
     const columns = Object.keys(json)    
     const values = Object.values(json)
+    const { table = '<table>', dataset = '<dataset>' } = options
 
     let sql = `SELECT` 
     for(let i=0; i<columns.length; i++){
@@ -77,6 +89,6 @@ export function parseNestedKey(json: any, keyName: string) {
             sql = `${sql}\n\t${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type}) as ${snakeCase(col)}` 
         }
     }
-    sql = `${sql}\nFROM <project>.<datastream>.<dataset>`
+    sql = `${sql}\nFROM <project>.${dataset}.${table}`
     return sql
 }

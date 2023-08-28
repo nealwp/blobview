@@ -10,7 +10,17 @@ This CLI tool reads a JSON file and produces BigQuery compatible SQL views from 
 ## Usage
 
 ```bash
-npx @nealwp/blobview <filepath> 
+npx @nealwp/blobview@latest [options] <filepath> 
+```
+
+```text
+Arguments:
+  filepath      path to valid JSON file
+
+Options:
+  -t TABLE, --table=TABLE           specify a table name to use in FROM clause. default: "<table>"
+  -d DATASET, --dataset=DATASET     specify a dataset to use in FROM clause. default: "<dataset>" 
+  -h, --help                        show help
 ```
 
 ## Examples:
@@ -19,9 +29,16 @@ Default output to STDOUT:
 npx @nealwp/blobview ./path/to/file.json
 ```
 
+Dataset and table as input options:
+```bash
+npx @nealwp/blobview --dataset=myDataset --table=myTable ./path/to/file.json
+# shorthand options
+npx @nealwp/blobview -d myDataset -t myTable ./path/to/file.json
+```
+
 Redirect output to file:
 ```bash
-npx @nealwp/blobview ./path/to/file.json > my-view-file.sql
+npx @nealwp/blobview@latest ./path/to/file.json > my-view-file.sql
 ```
 
 ## Features
@@ -32,6 +49,7 @@ npx @nealwp/blobview ./path/to/file.json > my-view-file.sql
 * Auto-formats column names to snake_case from camelCase and PascalCase
 * Detects deeply-nested objects and formats to JSON string
 * Pre-populates FROM clause with BigQuery-style placeholders
+* BigQuery dataset and table name can be supplied as input options
 
 ## Limitations
 * Does not detect DATE or TIMESTAMP types, or other types like BOOLEAN
@@ -40,7 +58,7 @@ npx @nealwp/blobview ./path/to/file.json > my-view-file.sql
 * Does not create SQL views in any syntax other than BigQuery
 * Requires a local JSON file to read
 * Does not include option to write queries to separate files instead of STDOUT
-* BigQuery project, dataset, and datastream names cannot be supplied as input
+* BigQuery project name cannot be supplied as input
 
 ## Example Output
 
@@ -100,20 +118,52 @@ SELECT
     , CAST(JSON_VALUE(json_blob.integerField) as INTEGER) as integer_field
     , CAST(JSON_VALUE(json_blob.decimalField) as DECIMAL) as decimal_field
     , TO_JSON_STRING(json_blob.exampleGeoJson) as example_geo_json 
-FROM <project>.<datastream>.<dataset>
---------
+FROM <project>.<dataset>.<table>
+/**/
 SELECT
     CAST(JSON_VALUE(json_blob.childField1.gender) as STRING) as gender 
     , CAST(JSON_VALUE(json_blob.childField1.latitude) as DECIMAL) as latitude 
-FROM <project>.<datastream>.<dataset>
---------
+FROM <project>.<dataset>.<table>
+/**/
 SELECT
     CAST(JSON_VALUE(json_blob.childField2.favoriteFruit) as STRING) as favorite_fruit 
     , CAST(JSON_VALUE(json_blob.childField2.longitude) as DECIMAL) as longitude 
-FROM <project>.<datastream>.<dataset>
---------
+FROM <project>.<dataset>.<table>
+/**/
 SELECT
     CAST(JSON_VALUE(json_blob.childWithNestedObject.isNormal) as STRING) as is_normal 
     , TO_JSON_STRING(json_blob.childWithNestedObject.nestedObject) as nested_object 
-FROM <project>.<datastream>.<dataset>
+FROM <project>.<dataset>.<table>
+```
+
+```bash
+# terminal command with input options
+npx @nealwp/blobview --dataset=myDataset --table=myTable sample-data.json
+```
+
+Will produce the following output:
+
+```sql
+/* stdout */
+SELECT
+    CAST(JSON_VALUE(json_blob.stringField) as STRING) as string_field
+    , CAST(JSON_VALUE(json_blob.integerField) as INTEGER) as integer_field
+    , CAST(JSON_VALUE(json_blob.decimalField) as DECIMAL) as decimal_field
+    , TO_JSON_STRING(json_blob.exampleGeoJson) as example_geo_json 
+FROM <project>.myDataset.myTable
+/**/
+SELECT
+    CAST(JSON_VALUE(json_blob.childField1.gender) as STRING) as gender 
+    , CAST(JSON_VALUE(json_blob.childField1.latitude) as DECIMAL) as latitude 
+FROM <project>.myDataset.myTable
+/**/
+SELECT
+    CAST(JSON_VALUE(json_blob.childField2.favoriteFruit) as STRING) as favorite_fruit 
+    , CAST(JSON_VALUE(json_blob.childField2.longitude) as DECIMAL) as longitude 
+FROM <project>.myDataset.myTable
+/**/
+SELECT
+    CAST(JSON_VALUE(json_blob.childWithNestedObject.isNormal) as STRING) as is_normal 
+    , TO_JSON_STRING(json_blob.childWithNestedObject.nestedObject) as nested_object 
+FROM <project>.myDataset.myTable
 ```

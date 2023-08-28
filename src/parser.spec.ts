@@ -12,7 +12,7 @@ describe('parser', () => {
                 }
             }
 
-            const expectedResult = ['SELECT\n\tCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER) as nested_key_1\n\t, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) as nested_key_2\n\t, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>']
+            const expectedResult = ['SELECT\n\tCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER) as nested_key_1\n\t, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) as nested_key_2\n\t, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<dataset>.<table>']
             const output = jsonToSqlView(testObj)
             expect(output.childQueries).toEqual(expectedResult) 
         })
@@ -26,9 +26,9 @@ describe('parser', () => {
             }
 
             const expectedResult = [
-                'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey1.nestedKey1) as STRING) as nested_key_1\nFROM <project>.<datastream>.<dataset>',
-                'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey2.nestedKey2) as INTEGER) as nested_key_2\nFROM <project>.<datastream>.<dataset>',
-                'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey3.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>',
+                'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey1.nestedKey1) as STRING) as nested_key_1\nFROM <project>.<dataset>.<table>',
+                'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey2.nestedKey2) as INTEGER) as nested_key_2\nFROM <project>.<dataset>.<table>',
+                'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey3.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<dataset>.<table>',
             ]
             const output = jsonToSqlView(testObj)
             expect(output.childQueries).toEqual(expectedResult) 
@@ -40,8 +40,26 @@ describe('parser', () => {
                 key2: 'abcd',
                 key3: 3.14
             }
-            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.key1) as INTEGER) as key_1\n\t, CAST(JSON_VALUE(json_blob.key2) as STRING) as key_2\n\t, CAST(JSON_VALUE(json_blob.key3) as DECIMAL) as key_3\nFROM <project>.<datastream>.<dataset>'
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.key1) as INTEGER) as key_1\n\t, CAST(JSON_VALUE(json_blob.key2) as STRING) as key_2\n\t, CAST(JSON_VALUE(json_blob.key3) as DECIMAL) as key_3\nFROM <project>.<dataset>.<table>'
             const output = jsonToSqlView(testObj)
+            expect(output.parentSql).toEqual(expectedResult)
+        })
+
+        it('should use input table name', () => {
+            const testObj = { key1: 'abcdefg' }
+            const options = { table: 'myTableName'}
+
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.key1) as STRING) as key_1\nFROM <project>.<dataset>.myTableName'
+            const output = jsonToSqlView(testObj, options)
+            expect(output.parentSql).toEqual(expectedResult)
+        })
+
+        it('should use input dataset name', () => {
+            const testObj = { key1: 'abcdefg' }
+            const options = { dataset: 'myDataset'}
+
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.key1) as STRING) as key_1\nFROM <project>.myDataset.<table>'
+            const output = jsonToSqlView(testObj, options)
             expect(output.parentSql).toEqual(expectedResult)
         })
 
@@ -56,7 +74,7 @@ describe('parser', () => {
                     features: ["feature", "collection", "here"]
                 }
             }
-            const expectedResult = 'SELECT\n\tTO_JSON_STRING(json_blob.geoJsonThing1) as geo_json_thing_1\n\t, TO_JSON_STRING(json_blob.geoJsonThing2) as geo_json_thing_2\nFROM <project>.<datastream>.<dataset>'
+            const expectedResult = 'SELECT\n\tTO_JSON_STRING(json_blob.geoJsonThing1) as geo_json_thing_1\n\t, TO_JSON_STRING(json_blob.geoJsonThing2) as geo_json_thing_2\nFROM <project>.<dataset>.<table>'
             const output = jsonToSqlView(testObj)
             expect(output.parentSql).toEqual(expectedResult)
         })
@@ -64,7 +82,7 @@ describe('parser', () => {
         it('should json string deeply nested objects', () => {
             const testObj = { nestedKey: { deeplyNestedKey: { some: 'key' } } }
 
-            const expectedResult = ['SELECT\n\tTO_JSON_STRING(json_blob.nestedKey.deeplyNestedKey) as deeply_nested_key\nFROM <project>.<datastream>.<dataset>']
+            const expectedResult = ['SELECT\n\tTO_JSON_STRING(json_blob.nestedKey.deeplyNestedKey) as deeply_nested_key\nFROM <project>.<dataset>.<table>']
             const output = jsonToSqlView(testObj)
             expect(output.childQueries).toEqual(expectedResult)
         })
@@ -80,15 +98,33 @@ describe('parser', () => {
                 }
             }
 
-            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER) as nested_key_1\n\t, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) as nested_key_2\n\t, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<datastream>.<dataset>'
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as INTEGER) as nested_key_1\n\t, CAST(JSON_VALUE(json_blob.topKey.nestedKey2) as STRING) as nested_key_2\n\t, CAST(JSON_VALUE(json_blob.topKey.nestedKey3) as DECIMAL) as nested_key_3\nFROM <project>.<dataset>.<table>'
             const output = parseNestedKey(testObj.topKey, 'topKey')
+            expect(output).toEqual(expectedResult) 
+        })
+        
+        it('should use input table name', () => {
+            const testObj = { topKey: { nestedKey1: 'abdcd' } }
+            const options = { table: 'myTableName' }
+
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as STRING) as nested_key_1\nFROM <project>.<dataset>.myTableName'
+            const output = parseNestedKey(testObj.topKey, 'topKey', options)
+            expect(output).toEqual(expectedResult) 
+        })
+
+        it('should use input dataset name', () => {
+            const testObj = { topKey: { nestedKey1: 'abdcd' } }
+            const options = { dataset: 'myDatasetName' }
+
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as STRING) as nested_key_1\nFROM <project>.myDatasetName.<table>'
+            const output = parseNestedKey(testObj.topKey, 'topKey', options)
             expect(output).toEqual(expectedResult) 
         })
         
         it('should json string deeply nested objects', () => {
             const testObj = { nestedKey: { deeplyNestedKey: { some: 'key' } } }
 
-            const expectedResult = 'SELECT\n\tTO_JSON_STRING(json_blob.nestedKey.deeplyNestedKey) as deeply_nested_key\nFROM <project>.<datastream>.<dataset>'
+            const expectedResult = 'SELECT\n\tTO_JSON_STRING(json_blob.nestedKey.deeplyNestedKey) as deeply_nested_key\nFROM <project>.<dataset>.<table>'
             const output = parseNestedKey(testObj.nestedKey, 'nestedKey')
             expect(output).toEqual(expectedResult)
         })
