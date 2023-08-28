@@ -74,9 +74,10 @@ export function jsonToSqlView(json: any, options: Options = defaultOptions) {
     return { parentSql, childQueries }
 }
 
-export function parseNestedKey(json: any, keyName: string) {
+export function parseNestedKey(json: any, keyName: string, options: Options = defaultOptions) {
     const columns = Object.keys(json)    
     const values = Object.values(json)
+    const { table = '<table>', dataset = '<dataset>' } = options
 
     let sql = `SELECT` 
     for(let i=0; i<columns.length; i++){
@@ -88,6 +89,6 @@ export function parseNestedKey(json: any, keyName: string) {
             sql = `${sql}\n\t${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type}) as ${snakeCase(col)}` 
         }
     }
-    sql = `${sql}\nFROM <project>.<dataset>.<table>`
+    sql = `${sql}\nFROM <project>.${dataset}.${table}`
     return sql
 }
