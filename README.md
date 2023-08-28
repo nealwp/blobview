@@ -10,18 +10,18 @@ This CLI tool reads a JSON file and produces BigQuery compatible SQL views from 
 ## Usage
 
 ```bash
-npx @nealwp/blobview <filepath> 
+npx @nealwp/blobview@latest <filepath> 
 ```
 
 ## Examples:
 Default output to STDOUT:
 ```bash
-npx @nealwp/blobview ./path/to/file.json
+npx @nealwp/blobview@latest ./path/to/file.json
 ```
 
 Redirect output to file:
 ```bash
-npx @nealwp/blobview ./path/to/file.json > my-view-file.sql
+npx @nealwp/blobview@latest ./path/to/file.json > my-view-file.sql
 ```
 
 ## Features
@@ -101,17 +101,17 @@ SELECT
     , CAST(JSON_VALUE(json_blob.decimalField) as DECIMAL) as decimal_field
     , TO_JSON_STRING(json_blob.exampleGeoJson) as example_geo_json 
 FROM <project>.<datastream>.<dataset>
---------
+/**/
 SELECT
     CAST(JSON_VALUE(json_blob.childField1.gender) as STRING) as gender 
     , CAST(JSON_VALUE(json_blob.childField1.latitude) as DECIMAL) as latitude 
 FROM <project>.<datastream>.<dataset>
---------
+/**/
 SELECT
     CAST(JSON_VALUE(json_blob.childField2.favoriteFruit) as STRING) as favorite_fruit 
     , CAST(JSON_VALUE(json_blob.childField2.longitude) as DECIMAL) as longitude 
 FROM <project>.<datastream>.<dataset>
---------
+/**/
 SELECT
     CAST(JSON_VALUE(json_blob.childWithNestedObject.isNormal) as STRING) as is_normal 
     , TO_JSON_STRING(json_blob.childWithNestedObject.nestedObject) as nested_object 
