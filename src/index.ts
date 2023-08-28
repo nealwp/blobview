@@ -38,31 +38,19 @@ export const main = (args: minimist.ParsedArgs) => {
 }
 
 function printHelp() {
-   const helpText = `
-=================================
-        @nealwp/blobview    
-=================================
+   const helpText = `Generate BigQuery SQL views from JSON.
 
-Generate BigQuery SQL views from JSON.
-
-Usage:
-
-    @nealwp/blobview [options] <filepath> 
+Usage:    
+  @nealwp/blobview [options] <filepath> 
 
 Arguments:
-
-    filepath              path to valid JSON file
+  filepath      path to valid JSON file
 
 Options:
+  -t TABLE, --table=TABLE           specify a table name to use in FROM clause. default: "<table>"
+  -d DATASET, --dataset=DATASET     specify a dataset to use in FROM clause. default: "<dataset>" 
+  -h, --help                        show help` 
 
-    --help, -h            show help
-
-    --dataset=DATASET,    specify a dataset to use in FROM clause. default: "<dataset>" 
-        -d DATASET
-    
-    --table=TABLE,        specify a table name to use in FROM clause. default: "<table>"
-        -t TABLE         
-` 
     console.log(helpText)
 }
 
