@@ -20,12 +20,16 @@ export const main = (args: minimist.ParsedArgs) => {
         return
     }
 
-    if (args.table || args.t) {
+    if (args.table) {
         table = args.table
+    } else if (args.t) {
+        table = args.t
     }
 
-    if (args.dataset || args.d) {
+    if (args.dataset) {
         dataset = args.dataset
+    } else if (args.d) {
+        dataset = args.d
     }
 
     try {
