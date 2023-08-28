@@ -10,8 +10,10 @@ This CLI tool reads a JSON file and produces BigQuery compatible SQL views from 
 ## Usage
 
 ```bash
-npx @nealwp/blobview [options] <filepath> 
+npx @nealwp/blobview@latest [options] <filepath> 
+```
 
+```text
 Arguments:
   filepath      path to valid JSON file
 
@@ -24,14 +26,14 @@ Options:
 ## Examples:
 Default output to STDOUT:
 ```bash
-npx @nealwp/blobview@latest ./path/to/file.json
+npx @nealwp/blobview ./path/to/file.json
 ```
 
 Dataset and table as input options:
 ```bash
-npx @nealwp/blobview@latest --dataset=myDataset --table=myTable ./path/to/file.json
+npx @nealwp/blobview --dataset=myDataset --table=myTable ./path/to/file.json
 # shorthand options
-npx @nealwp/blobview@latest -d myDataset -t myTable ./path/to/file.json
+npx @nealwp/blobview -d myDataset -t myTable ./path/to/file.json
 ```
 
 Redirect output to file:
