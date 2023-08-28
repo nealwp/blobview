@@ -8,7 +8,7 @@ export function readJsonFileContent(path: string) {
 export function writeToStdOut(data: {parentSql: string, childQueries: string[]}) {
     console.log(data.parentSql)
     data.childQueries.forEach(q => { 
-        console.log("--------")
+        console.log("/**/")
         console.log(q)
     })
 }
