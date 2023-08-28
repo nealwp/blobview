@@ -43,8 +43,19 @@ export function snakeCase(str: string) {
     });
 }
 
-export function jsonToSqlView(json: any) {
+type Options = {
+    table?: string,
+    dataset?: string
+}
+
+const defaultOptions: Options = {
+    table: '<table>',
+    dataset: '<dataset>'
+}
+
+export function jsonToSqlView(json: any, options: Options = defaultOptions) {
     const keys = Object.keys(json)
+    const { table = '<table>', dataset = '<dataset>' } = options
     const childQueries = [];
 
     let parentSql = `SELECT`;
@@ -59,7 +70,7 @@ export function jsonToSqlView(json: any) {
            parentSql = `${parentSql}\n\t${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type}) as ${snakeCase(k)}`
         } 
     }
-    parentSql = `${parentSql}\nFROM <project>.<dataset>.<table>`
+    parentSql = `${parentSql}\nFROM <project>.${dataset}.${table}`
     return { parentSql, childQueries }
 }
 

@@ -45,6 +45,24 @@ describe('parser', () => {
             expect(output.parentSql).toEqual(expectedResult)
         })
 
+        it('should use input table name', () => {
+            const testObj = { key1: 'abcdefg' }
+            const options = { table: 'myTableName'}
+
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.key1) as STRING) as key_1\nFROM <project>.<dataset>.myTableName'
+            const output = jsonToSqlView(testObj, options)
+            expect(output.parentSql).toEqual(expectedResult)
+        })
+
+        it('should use input dataset name', () => {
+            const testObj = { key1: 'abcdefg' }
+            const options = { dataset: 'myDataset'}
+
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.key1) as STRING) as key_1\nFROM <project>.myDataset.<table>'
+            const output = jsonToSqlView(testObj, options)
+            expect(output.parentSql).toEqual(expectedResult)
+        })
+
         it('should keep geoJson collections in parent query as json strings', () => {
             const testObj = {
                 geoJsonThing1: {
