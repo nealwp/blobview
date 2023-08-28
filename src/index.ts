@@ -10,16 +10,21 @@ export const main = (args: minimist.ParsedArgs) => {
     let table = '<table>'
     let dataset = '<dataset>'
 
+    if(args.help || args.h) {
+        printHelp()
+        return
+    }
+    
     if(!inputFilePath) {
-        printHelp();
+        printError("No file path provided!");
         return
     }
 
-    if (args.table) {
+    if (args.table || args.t) {
         table = args.table
     }
 
-    if (args.dataset) {
+    if (args.dataset || args.d) {
         dataset = args.dataset
     }
 
@@ -33,8 +38,37 @@ export const main = (args: minimist.ParsedArgs) => {
 }
 
 function printHelp() {
-    const msg = `Error: no file path provided.\nUsage:\n\nnpx @nealwp/blobview <filepath>\n`
-    console.log(msg)
+   const helpText = `
+=================================
+        @nealwp/blobview    
+=================================
+
+Generate BigQuery SQL views from JSON.
+
+Usage:
+
+    @nealwp/blobview [options] <filepath> 
+
+Arguments:
+
+    filepath              path to valid JSON file
+
+Options:
+
+    --help, -h            show help
+
+    --dataset=DATASET,    specify a dataset to use in FROM clause. default: "<dataset>" 
+        -d DATASET
+    
+    --table=TABLE,        specify a table name to use in FROM clause. default: "<table>"
+        -t TABLE         
+` 
+    console.log(helpText)
+}
+
+function printError(message: string) {
+    console.log(`Error: ${message}`)
+    console.log('Run "@nealwp/blobview --help" to display help.')
 }
 
 const args = minimist(process.argv.slice(2), {
