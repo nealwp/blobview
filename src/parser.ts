@@ -59,7 +59,7 @@ export function jsonToSqlView(json: any) {
            parentSql = `${parentSql}\n\t${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${k}) as ${type}) as ${snakeCase(k)}`
         } 
     }
-    parentSql = `${parentSql}\nFROM <project>.<datastream>.<dataset>`
+    parentSql = `${parentSql}\nFROM <project>.<dataset>.<table>`
     return { parentSql, childQueries }
 }
 
@@ -77,6 +77,6 @@ export function parseNestedKey(json: any, keyName: string) {
             sql = `${sql}\n\t${commaIfNeeded(i)}CAST(JSON_VALUE(json_blob.${keyName}.${col}) as ${type}) as ${snakeCase(col)}` 
         }
     }
-    sql = `${sql}\nFROM <project>.<datastream>.<dataset>`
+    sql = `${sql}\nFROM <project>.<dataset>.<table>`
     return sql
 }
