@@ -103,6 +103,15 @@ describe('parser', () => {
             expect(output).toEqual(expectedResult) 
         })
         
+        it('should use input table name', () => {
+            const testObj = { topKey: { nestedKey1: 'abdcd' } }
+            const options = { table: 'myTableName' }
+
+            const expectedResult = 'SELECT\n\tCAST(JSON_VALUE(json_blob.topKey.nestedKey1) as STRING) as nested_key_1\nFROM <project>.<dataset>.myTableName'
+            const output = parseNestedKey(testObj.topKey, 'topKey', options)
+            expect(output).toEqual(expectedResult) 
+        })
+
         it('should json string deeply nested objects', () => {
             const testObj = { nestedKey: { deeplyNestedKey: { some: 'key' } } }
 
