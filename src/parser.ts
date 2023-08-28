@@ -63,7 +63,7 @@ export function jsonToSqlView(json: any, options: Options = defaultOptions) {
         if (typeof json[k] === 'object' && isGeoJsonFeatureCollection(json[k])) {
            parentSql = `${parentSql}\n\t${commaIfNeeded(i)}TO_JSON_STRING(json_blob.${k}) as ${snakeCase(k)}`
         } else if (typeof json[k] === 'object' && !isGeoJsonFeatureCollection(json[k])){
-            const query = parseNestedKey(json[k], k)
+            const query = parseNestedKey(json[k], k, options)
             childQueries.push(query)
         } else {
            const type = datatype(json[k])
