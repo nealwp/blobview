@@ -1,0 +1,20 @@
+name: Manual Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Tag version to deploy (e.g., v1.2.3)'
+        required: true
+
+jobs:
+  deploy:
+    runs_on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Deploy
+      run: echo ${{ github.event.inputs.version }}
+
