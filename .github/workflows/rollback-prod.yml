@@ -1,0 +1,29 @@
+name: Rollback Production Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release to deploy to Prod (e.g., v1.2.3)'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      - name: Verify tag exists
+        run: |
+            TAG_EXISTS=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/git/ref/tags/${{ github.event.inputs.version }}" | jq -r ".ref")
+            
+            if [ "$TAG_EXISTS" == "null" ]; then
+              echo "Error: Tag ${{ github.event.inputs.version }} does not exist!"
+              exit 1
+            fi
+          
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Deploy
+        run: echo ${{ github.event.inputs.version }}
